@@ -30,6 +30,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("/login")
 public class LoginResource {
@@ -60,7 +61,8 @@ public class LoginResource {
     @Path("/token")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public void loginToken(@FormParam("tokenId") String tokenIdString) {
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response loginToken(@FormParam("tokenId") String tokenIdString) {
         System.out.println("Token:" + tokenIdString);
 
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
@@ -98,8 +100,14 @@ public class LoginResource {
 
             // Use or store profile information
             // ...
+            Reviewer rev = new Reviewer();
+            rev.setEmail(email);
+            rev.setName(name);
+            return Response.ok().entity(rev).build();
+
         } else {
             System.out.println("Invalid ID token.");
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
     }
 
