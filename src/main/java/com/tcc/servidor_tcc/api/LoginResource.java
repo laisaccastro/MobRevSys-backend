@@ -13,8 +13,15 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.tcc.servidor_tcc.DBUtil.DBConnection;
 import com.tcc.servidor_tcc.entidades.Reviewer;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.crypto.MacProvider;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.Key;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -98,12 +105,21 @@ public class LoginResource {
             String familyName = (String) payload.get("family_name");
             String givenName = (String) payload.get("given_name");
 
-            // Use or store profile information
-            // ...
-            Reviewer rev = new Reviewer();
-            rev.setEmail(email);
-            rev.setName(name);
-            return Response.ok().entity(rev).build();
+            EntityManager em = DBConnection.getEntityManager();
+            Query q = em.createQuery("SELECT R FROM Reviewer R where R.email = :email");
+            q.setParameter("email", email);
+            List<Reviewer> reviewers = q.getResultList();
+            if(reviewers.size()==1){
+                Config conf = ConfigFactory.load();
+                String key = conf.getString("jwt-key");
+                String s = Jwts.builder().setSubject(email).signWith(SignatureAlgorithm.HS512, key).compact();
+                return Response.ok().entity(s).build();
+            }else {
+                Reviewer rev = new Reviewer();
+                rev.setEmail(email);
+                rev.setName(name);
+                return Response.status(Response.Status.CREATED).entity(rev).build();
+            }
 
         } else {
             System.out.println("Invalid ID token.");

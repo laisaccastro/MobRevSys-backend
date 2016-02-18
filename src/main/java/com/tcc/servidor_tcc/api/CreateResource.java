@@ -6,6 +6,7 @@
 package com.tcc.servidor_tcc.api;
 
 import com.tcc.servidor_tcc.DBUtil.DBConnection;
+import com.tcc.servidor_tcc.api.filter.Authenticate;
 import com.tcc.servidor_tcc.entidades.SystematicReview;
 import javax.persistence.EntityManager;
 import javax.ws.rs.Consumes;
@@ -16,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("/create")
+@Authenticate
 public class CreateResource {
 
     @POST
