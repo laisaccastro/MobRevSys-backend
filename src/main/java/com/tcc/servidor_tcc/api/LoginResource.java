@@ -13,26 +13,17 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.tcc.servidor_tcc.DBUtil.DBConnection;
 import com.tcc.servidor_tcc.entidades.Reviewer;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.crypto.MacProvider;
-
+import com.tcc.servidor_tcc.tokenUtil.Token;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.security.Key;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -59,7 +50,7 @@ public class LoginResource {
         if(reviewers.size()==1){
             Reviewer r = reviewers.get(0);
             if(r.getPassword().equals(reviewer.getPassword())){
-                result = createClientToken(reviewer.getEmail());
+                result = Token.createClientToken(reviewer.getEmail());
                 status = Response.Status.OK;
             }else{
                 result = "Incorrect password";
@@ -98,7 +89,7 @@ public class LoginResource {
 
            
             String email = payload.getEmail();
-            boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
+            boolean emailVerified = payload.getEmailVerified();
             String name = (String) payload.get("name");
             String pictureUrl = (String) payload.get("picture");
             String locale = (String) payload.get("locale");
@@ -110,7 +101,7 @@ public class LoginResource {
             q.setParameter("email", email);
             List<Reviewer> reviewers = q.getResultList();
             if(reviewers.size()==1){
-                String clientToken = createClientToken(email);
+                String clientToken = Token.createClientToken(email);
                 return Response.ok().entity(clientToken).build();
             }else {
                 Reviewer rev = new Reviewer();
@@ -127,11 +118,5 @@ public class LoginResource {
         
     }
     
-    public String createClientToken(String email){
-            Config conf = ConfigFactory.load();
-            String key = conf.getString("jwt-key");
-            String s = Jwts.builder().setSubject(email).signWith(SignatureAlgorithm.HS512, key).compact();
-            return s;
-        }
 
 }
