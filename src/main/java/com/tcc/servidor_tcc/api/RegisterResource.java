@@ -3,6 +3,7 @@ package com.tcc.servidor_tcc.api;
 
 import com.tcc.servidor_tcc.DBUtil.DBConnection;
 import com.tcc.servidor_tcc.entidades.Reviewer;
+import com.tcc.servidor_tcc.tokenUtil.Token;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -31,7 +32,8 @@ public class RegisterResource {
             em.getTransaction().begin();
             em.persist(reviewer);
             em.getTransaction().commit();
-            return Response.ok().build();
+            String result = Token.createClientToken(reviewer.getEmail());
+            return Response.ok().entity(result).build();
         }
     }
     
