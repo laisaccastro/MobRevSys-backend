@@ -47,22 +47,26 @@ public class LoginResource {
     private static final JsonFactory jsonFactory = new GsonFactory();
 
     @POST
-    @Produces(MediaType.TEXT_PLAIN)
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public String login(@FormParam("email") String email,@FormParam("password") String password) {
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response login(Reviewer reviewer) {
         EntityManager em = DBConnection.getEntityManager();
         Query q = em.createQuery("SELECT R FROM Reviewer R where R.email = :email");
-        q.setParameter("email", email);
+        q.setParameter("email", reviewer.getEmail());
         List<Reviewer> reviewers = q.getResultList();
+        String result = "Email isn't registered";
+        Response.Status status = Response.Status.NOT_FOUND;
         if(reviewers.size()==1){
             Reviewer r = reviewers.get(0);
-            if(r.getPassword().equals(password)){
-                return "sucesso";
+            if(r.getPassword().equals(reviewer.getPassword())){
+                result = createClientToken(reviewer.getEmail());
+                status = Response.Status.OK;
             }else{
-                return "senha incorreta";
+                result = "Incorrect password";
+                status = Response.Status.UNAUTHORIZED;
             }
         }
-        return "email nao cadastrado";
+        return Response.status(status).entity(result).build();
     }
 
     @Path("/token")
@@ -74,10 +78,6 @@ public class LoginResource {
 
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
                 .setAudience(Arrays.asList(CLIENT_ID))
-                // If you retrieved the token on Android using the Play Services 8.3 API or newer, set
-                // the issuer to "https://accounts.google.com". Otherwise, set the issuer to 
-                // "accounts.google.com". If you need to verify tokens from multiple sources, build
-                // a GoogleIdTokenVerifier for each issuer and try them both.
                 .setIssuer("https://accounts.google.com")
                 .build();
 
@@ -92,11 +92,11 @@ public class LoginResource {
         if (idToken != null) {
             Payload payload = idToken.getPayload();
 
-            // Print user identifier
+           
             String userId = payload.getSubject();
             System.out.println("User ID: " + userId);
 
-            // Get profile information from payload
+           
             String email = payload.getEmail();
             boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
             String name = (String) payload.get("name");
@@ -110,10 +110,8 @@ public class LoginResource {
             q.setParameter("email", email);
             List<Reviewer> reviewers = q.getResultList();
             if(reviewers.size()==1){
-                Config conf = ConfigFactory.load();
-                String key = conf.getString("jwt-key");
-                String s = Jwts.builder().setSubject(email).signWith(SignatureAlgorithm.HS512, key).compact();
-                return Response.ok().entity(s).build();
+                String clientToken = createClientToken(email);
+                return Response.ok().entity(clientToken).build();
             }else {
                 Reviewer rev = new Reviewer();
                 rev.setEmail(email);
@@ -125,6 +123,15 @@ public class LoginResource {
             System.out.println("Invalid ID token.");
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
+        
+        
     }
+    
+    public String createClientToken(String email){
+            Config conf = ConfigFactory.load();
+            String key = conf.getString("jwt-key");
+            String s = Jwts.builder().setSubject(email).signWith(SignatureAlgorithm.HS512, key).compact();
+            return s;
+        }
 
 }
