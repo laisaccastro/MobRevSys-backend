@@ -22,9 +22,12 @@ public class AuthFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext containerRequestContext) throws IOException {
 
         String jwt = containerRequestContext.getHeaderString("Authorization");
+        if(jwt==null||jwt.equals("")){
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        }
         Config conf = ConfigFactory.load();
         try{
-            Jws<Claims> claims = Jwts.parser().setSigningKey(conf.getString("jwt-key")).parseClaimsJws(jwt);
+            Jws<Claims> claims = Jwts.parser().setSigningKey(conf.getString("app.jwt-key")).parseClaimsJws(jwt);
 
         }catch (SignatureException e){
                 throw new WebApplicationException(Response.Status.UNAUTHORIZED);
