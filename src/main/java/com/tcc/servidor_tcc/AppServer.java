@@ -25,20 +25,15 @@ public class AppServer {
      */
     public static void main(String[] args) throws IOException {
         Server server = new Server(8080);
-        ServletHolder servlet  = new ServletHolder(ServletContainer.class);
-        servlet.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
-        servlet.setInitParameter("jersey.config.server.provider.packages","com.tcc.servidor_tcc.api");
-        servlet.setInitParameter("com.sun.jersey.api.json.POJOMappingFeature", "true");
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
+        server.setHandler(context);
 //        context.setResourceBase("src/main/webapp/angularjs/dist");
-        context.addServlet(DefaultServlet.class,"/*");
-        context.addServlet(servlet,"/api/*");
-
-        HandlerCollection collection = new HandlerCollection();
-        collection.addHandler(context);
-        server.setHandler(collection);
-
+        context.addServlet(DefaultServlet.class,"/");  
+        ServletHolder servlet  = context.addServlet(org.glassfish.jersey.servlet.ServletContainer.class,"/api/*");
+        servlet.setInitOrder(0);
+        servlet.setInitParameter("jersey.config.server.provider.packages","com.tcc.servidor_tcc.api");
+        
 
         try{
             server.start();
