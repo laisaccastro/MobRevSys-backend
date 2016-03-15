@@ -1,11 +1,9 @@
 package com.tcc.servidor_tcc.entidades;
 
-import com.tcc.servidor_tcc.Type.RoleType;
+import com.tcc.servidor_tcc.type.RoleType;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class ReviewerRole {
@@ -13,8 +11,13 @@ public class ReviewerRole {
     @Id
     @GeneratedValue
     public long Id;
+
+    @ManyToOne
     private SystematicReview systematicReview;
+
     private Reviewer reviewer;
+
+    @Enumerated(EnumType.STRING)
     private List<RoleType> roles;
 
     public long getId() {

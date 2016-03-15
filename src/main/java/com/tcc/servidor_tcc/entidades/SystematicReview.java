@@ -1,30 +1,46 @@
 package com.tcc.servidor_tcc.entidades;
 
-import com.tcc.servidor_tcc.Type.PaperDivisionType;
-import com.tcc.servidor_tcc.Type.RoleType;
-import java.util.Iterator;
+import com.tcc.servidor_tcc.type.PaperDivisionType;
+import com.tcc.servidor_tcc.type.RoleType;
 
+import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+
+@NamedQueries({
+        @NamedQuery(name="SystematicReview.getAll",
+                    query="SELECT SR FROM SystematicReview SR where SR.owner.email = :email OR (SELECT COUNT(RR) FROM ReviewerRole where RR.reviewer.email = :email AND RR.systematicReview = SR ) > 0")
+})
 
 @Entity
 public class SystematicReview {
     
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long Id;
+
+    @ManyToOne
     private Reviewer owner;
+
     private String title;
+
     private String objective;
+
     private List<String> researchQuestions;
+
+    @OneToMany
     private List<Criteria> criteria;
-    private List<ReviewerRole> participatingReviewers;  
+
+    @OneToMany(mappedBy="sysReview")
+    private List<ReviewerRole> participatingReviewers;
+
+    @OneToOne
     private BibFile bib;
+
+    @Enumerated(EnumType.STRING)
     private PaperDivisionType divisionType;
+
     
     public void parseBib(){
         

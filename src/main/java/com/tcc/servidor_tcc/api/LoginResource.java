@@ -11,13 +11,15 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
-import com.tcc.servidor_tcc.DBUtil.DBConnection;
+import com.tcc.servidor_tcc.dao.ReviewerDAO;
+import com.tcc.servidor_tcc.dao.ReviewerDAOjpa;
 import com.tcc.servidor_tcc.entidades.Reviewer;
 import com.tcc.servidor_tcc.tokenUtil.Token;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
@@ -41,14 +43,12 @@ public class LoginResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response login(Reviewer reviewer) {
-        EntityManager em = DBConnection.getEntityManager();
-        Query q = em.createQuery("SELECT R FROM Reviewer R where R.email = :email");
-        q.setParameter("email", reviewer.getEmail());
-        List<Reviewer> reviewers = q.getResultList();
+        ReviewerDAO dao = new ReviewerDAOjpa();
+        Optional<Reviewer> rev = dao.getOne(reviewer.getEmail());
         String result = "Email isn't registered";
         Response.Status status = Response.Status.NOT_FOUND;
-        if(reviewers.size()==1){
-            Reviewer r = reviewers.get(0);
+        if(rev.isPresent()){
+            Reviewer r = rev.get();
             if(r.getPassword().equals(reviewer.getPassword())){
                 result = Token.createClientToken(reviewer.getEmail());
                 status = Response.Status.OK;
@@ -96,18 +96,16 @@ public class LoginResource {
             String familyName = (String) payload.get("family_name");
             String givenName = (String) payload.get("given_name");
 
-            EntityManager em = DBConnection.getEntityManager();
-            Query q = em.createQuery("SELECT R FROM Reviewer R where R.email = :email");
-            q.setParameter("email", email);
-            List<Reviewer> reviewers = q.getResultList();
-            if(reviewers.size()==1){
+            ReviewerDAO dao = new ReviewerDAOjpa();
+            Optional<Reviewer> rev = dao.getOne(email);
+            if(rev.isPresent()){
                 String clientToken = Token.createClientToken(email);
                 return Response.ok().entity(clientToken).build();
             }else {
-                Reviewer rev = new Reviewer();
-                rev.setEmail(email);
-                rev.setName(name);
-                return Response.status(Response.Status.CREATED).entity(rev).build();
+                Reviewer reviewer = new Reviewer();
+                reviewer.setEmail(email);
+                reviewer.setName(name);
+                return Response.status(Response.Status.CREATED).entity(reviewer).build();
             }
 
         } else {

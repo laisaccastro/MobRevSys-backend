@@ -5,7 +5,6 @@
  */
 package com.tcc.servidor_tcc.api;
 
-import com.tcc.servidor_tcc.DBUtil.DBConnection;
 import com.tcc.servidor_tcc.api.filter.Authenticate;
 import com.tcc.servidor_tcc.dao.ReviewerDAO;
 import com.tcc.servidor_tcc.dao.ReviewerDAOjpa;
@@ -38,7 +37,6 @@ public class SystematicReviewResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createSR(SystematicReview sr, @HeaderParam("Authorization") String jwt) {
-        EntityManager em = DBConnection.getEntityManager();
         String email = Token.getClientEmail(jwt);
         ReviewerDAO reviewerDAO = new ReviewerDAOjpa();
         Optional<Reviewer> rev = reviewerDAO.getOne(email);

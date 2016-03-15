@@ -5,6 +5,7 @@ import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 class Study {    
@@ -15,6 +16,7 @@ class Study {
     private List<String> authors;
     private String title;
     private String studyAbstract;
+    @OneToMany(mappedBy = "study")
     private List<ReviewedStudy> reviewedStudies;
 
     public long getId() {

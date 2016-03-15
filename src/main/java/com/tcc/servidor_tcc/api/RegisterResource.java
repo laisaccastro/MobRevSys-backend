@@ -1,10 +1,12 @@
 
 package com.tcc.servidor_tcc.api;
 
-import com.tcc.servidor_tcc.DBUtil.DBConnection;
+import com.tcc.servidor_tcc.dao.ReviewerDAO;
+import com.tcc.servidor_tcc.dao.ReviewerDAOjpa;
 import com.tcc.servidor_tcc.entidades.Reviewer;
 import com.tcc.servidor_tcc.tokenUtil.Token;
 import java.util.List;
+import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
@@ -22,18 +24,16 @@ public class RegisterResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response registerReviewer(Reviewer reviewer){
-        EntityManager em = DBConnection.getEntityManager();
-        Query q = em.createQuery("SELECT R FROM Reviewer AS R WHERE R.email = :email");
-        q.setParameter("email",reviewer.getEmail());
-        List<Reviewer> reviewers = q.getResultList();
-        if(!reviewers.isEmpty()){
-            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
-        }else{
-            em.getTransaction().begin();
-            em.persist(reviewer);
-            em.getTransaction().commit();
+        ReviewerDAO dao = new ReviewerDAOjpa();
+        Optional<Reviewer> rev = dao.getOne(reviewer.getEmail());
+
+        if(rev.isPresent()){
+            dao.persist(reviewer);
             String result = Token.createClientToken(reviewer.getEmail());
             return Response.ok().entity(result).build();
+
+        }else{
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
     }
     

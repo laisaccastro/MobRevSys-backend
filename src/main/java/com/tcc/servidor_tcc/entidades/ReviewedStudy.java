@@ -2,9 +2,7 @@ package com.tcc.servidor_tcc.entidades;
 
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class ReviewedStudy {
@@ -12,9 +10,14 @@ public class ReviewedStudy {
     @Id
     @GeneratedValue
     private long Id;
+    @ManyToOne
     private Study study;
+
+    @OneToOne
     private Reviewer reviewer;
     private boolean included;
+
+    @OneToMany
     private List<ReviewedStudyCriteria> reviewedCriteria;
 
     public long getId() {

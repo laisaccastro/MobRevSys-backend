@@ -1,17 +1,17 @@
 package com.tcc.servidor_tcc.dao;
 
-import com.tcc.servidor_tcc.DBUtil.DBConnection;
 import com.tcc.servidor_tcc.entidades.SystematicReview;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-public class SystematicReviewDAOjpa implements SystematicReviewDAO {
-    
+public class SystematicReviewDAOjpa extends DaoJpa implements SystematicReviewDAO {
+
     private EntityManager em;
-    
+
     public SystematicReviewDAOjpa(){
-        em = DBConnection.getEntityManager();
+        em = getEntityManager();
     }
 
     @Override
@@ -28,7 +28,7 @@ public class SystematicReviewDAOjpa implements SystematicReviewDAO {
 
     @Override
     public List<SystematicReview> getAll(String email) {
-        Query q = em.createQuery("SELECT SR FROM SystematicReview SR where SR.owner.email = :email OR (SELECT COUNT(RR) FROM ReviewerRole where RR.reviewer.email = :email AND RR.systematicReview = SR ) > 0");
+        Query q = em.createNamedQuery("SystematicReview.getAll");
         q.setParameter("email", email);
         List<SystematicReview> sr = q.getResultList();
         return sr;

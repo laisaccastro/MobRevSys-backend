@@ -7,6 +7,8 @@ import java.util.Optional;
 public interface ReviewerDAO {
     
     public Optional<Reviewer> getOne(String email);
+
+    public void persist(Reviewer reviewer);
     
     public List<Reviewer> getAll();
 }

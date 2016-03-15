@@ -7,6 +7,7 @@ import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class BibFile {
@@ -16,6 +17,8 @@ public class BibFile {
     private long Id;
     private String name;
     private URL url;
+
+    @OneToMany
     private List<Study> studies;
 
     public long getId() {

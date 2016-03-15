@@ -2,6 +2,14 @@
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
   <persistence-unit name="tcc_unit" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>com.tcc.servidor_tcc.entidades.SystematicReview</class>
+    <class>com.tcc.servidor_tcc.entidades.BibFile</class>
+    <class>com.tcc.servidor_tcc.entidades.Criteria</class>
+    <class>com.tcc.servidor_tcc.entidades.ReviewedStudy</class>
+    <class>com.tcc.servidor_tcc.entidades.ReviewedStudyCriteria</class>
+    <class>com.tcc.servidor_tcc.entidades.Reviewer</class>
+    <class>com.tcc.servidor_tcc.entidades.ReviewerRole</class>
+    <class>com.tcc.servidor_tcc.entidades.Study</class>
     <properties>
       <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
       <property name="javax.persistence.jdbc.url" value="jdbc:derby:/home/laisa/databases/simpleDb;create=true" />

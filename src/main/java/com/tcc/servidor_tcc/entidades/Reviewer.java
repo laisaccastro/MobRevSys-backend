@@ -2,12 +2,15 @@ package com.tcc.servidor_tcc.entidades;
 
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
+
+@NamedQueries({
+        @NamedQuery(name = "Reviewer.getAll",
+                    query = "SELECT R FROM Reviewer R")
+})
+
 @Entity
 public class Reviewer {
     
@@ -17,6 +20,8 @@ public class Reviewer {
     private String password;
     private String affiliatedUniversity;
     private String country;
+
+    @OneToMany(mappedBy = "owner")
     private List<SystematicReview> reviews;
 
     public String getName() {
