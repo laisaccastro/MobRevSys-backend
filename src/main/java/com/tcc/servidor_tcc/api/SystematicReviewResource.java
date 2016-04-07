@@ -14,7 +14,13 @@ import com.tcc.servidor_tcc.entidades.Reviewer;
 import com.tcc.servidor_tcc.entidades.ReviewerRole;
 import com.tcc.servidor_tcc.entidades.SystematicReview;
 import com.tcc.servidor_tcc.tokenUtil.Token;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.ws.rs.Consumes;
@@ -28,6 +34,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
+import org.jbibtex.*;
 
 @Path("/systematicreview")
 @Authenticate
@@ -37,17 +44,21 @@ public class SystematicReviewResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createSR(SystematicReview sr, @HeaderParam("Authorization") String jwt) {
-        String email = Token.getClientEmail(jwt);
-        ReviewerDAO reviewerDAO = new ReviewerDAOjpa();
-        Optional<Reviewer> rev = reviewerDAO.getOne(email);
-        if (rev.isPresent()) {
-            sr.setOwner(rev.get());
-        } else {
-            throw new RuntimeException("Trying to set as owner a reviewer that does not exist");
+        try {
+            String email = Token.getClientEmail(jwt);
+            ReviewerDAO reviewerDAO = new ReviewerDAOjpa();
+            Optional<Reviewer> rev = reviewerDAO.getOne(email);
+            if (rev.isPresent()) {
+                sr.setOwner(rev.get());
+            } else {
+                throw new RuntimeException("Trying to set as owner a reviewer that does not exist");
+            }
+            inviteReviewers(reviewerDAO, sr);
+            SystematicReviewDAO srd = new SystematicReviewDAOjpa();
+            srd.save(sr);
+        }catch(Exception e){
+            e.printStackTrace();
         }
-        inviteReviewers(reviewerDAO, sr);
-        SystematicReviewDAO srd = new SystematicReviewDAOjpa();
-        srd.save(sr); 
         return Response.ok().build();
     }
     

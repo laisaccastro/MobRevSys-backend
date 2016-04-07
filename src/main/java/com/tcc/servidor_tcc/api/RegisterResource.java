@@ -3,17 +3,18 @@ package com.tcc.servidor_tcc.api;
 
 import com.tcc.servidor_tcc.dao.ReviewerDAO;
 import com.tcc.servidor_tcc.dao.ReviewerDAOjpa;
+import com.tcc.servidor_tcc.entidades.BibFile;
 import com.tcc.servidor_tcc.entidades.Reviewer;
+import com.tcc.servidor_tcc.entidades.Study;
 import com.tcc.servidor_tcc.tokenUtil.Token;
-import java.util.List;
-import java.util.Optional;
+import org.jbibtex.*;
+
+import java.io.*;
+import java.util.*;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -27,7 +28,7 @@ public class RegisterResource {
         ReviewerDAO dao = new ReviewerDAOjpa();
         Optional<Reviewer> rev = dao.getOne(reviewer.getEmail());
 
-        if(rev.isPresent()){
+        if(!rev.isPresent()){
             dao.persist(reviewer);
             String result = Token.createClientToken(reviewer.getEmail());
             return Response.ok().entity(result).build();
