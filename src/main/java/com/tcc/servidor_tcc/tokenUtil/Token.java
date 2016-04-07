@@ -22,7 +22,7 @@ public class Token {
         
         public static String getServerToken(){
              Config conf = ConfigFactory.load();
-             return conf.getString("jwt-key");
+             return conf.getString("app.jwt-key");
         }
     
 }
