@@ -1,16 +1,20 @@
 package com.tcc.servidor_tcc.entidades;
 
 import com.tcc.servidor_tcc.type.PaperDivisionType;
-import com.tcc.servidor_tcc.type.RoleType;
 
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @NamedQueries({
         @NamedQuery(name="SystematicReview.getAll",
-                    query="SELECT SR FROM SystematicReview SR where SR.owner.email = :email OR (SELECT COUNT(RR) FROM ReviewerRole where RR.reviewer.email = :email AND RR.systematicReview = SR ) > 0")
+                query="SELECT SR FROM SystematicReview SR WHERE SR.owner.email = :email")
+//        @NamedQuery(name="SystematicReview.getAll",
+//                    query="SELECT SR FROM SystematicReview SR " +
+//                            "where SR.owner.email = :email " +
+//                            "OR (SELECT COUNT(RR) FROM ReviewerRole RR" +
+//                                "where RR.reviewer.email = :email " +
+//                                "AND RR.systematicReview.id = SR.id ) > 0")
 })
 
 @Entity
@@ -18,7 +22,7 @@ public class SystematicReview {
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long Id;
+    private long id;
 
     @ManyToOne
     private Reviewer owner;
@@ -29,59 +33,24 @@ public class SystematicReview {
 
     private List<String> researchQuestions;
 
-    @OneToMany
     private List<Criteria> criteria;
 
     @OneToMany(mappedBy="sysReview")
     private List<ReviewerRole> participatingReviewers;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     private BibFile bib;
 
     @Enumerated(EnumType.STRING)
     private PaperDivisionType divisionType;
 
-    
-    public void parseBib(){
-        
-    }
-    
-    private void separateStudies(){
-        List<Reviewer> selectionReviewers = participatingReviewers
-                .stream()
-                .filter( r -> r.getRoles().contains(RoleType.SELECTION))
-                .map( r -> r.getReviewer())
-                .collect(Collectors.toList());
-        
-        switch(divisionType){
-            case ALL:
-                for(Study s:bib.getStudies()){
-                    for(Reviewer r: selectionReviewers){
-                        ReviewedStudy reviewedStudy = new ReviewedStudy();
-                        reviewedStudy.setReviewer(r);
-                        reviewedStudy.setStudy(s);
-                        s.addReviewedStudy(reviewedStudy);
-                    }
-                }
-                break;
-            case SPLIT:
-                List<Study> studies = bib.getStudies();
-                for(int i=0;i<studies.size();i++){
-                    ReviewedStudy reviewedStudy = new ReviewedStudy();
-                    reviewedStudy.setReviewer(selectionReviewers.get(i % selectionReviewers.size()));
-                    reviewedStudy.setStudy(studies.get(i));
-                    studies.get(i).addReviewedStudy(reviewedStudy);
-                }
-                break;
-        }
-    }
 
     public long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(long Id) {
-        this.Id = Id;
+        this.id = Id;
     }
 
     public Reviewer getOwner() {
@@ -160,7 +129,7 @@ public class SystematicReview {
             return false;
         }
         final SystematicReview other = (SystematicReview) obj;
-        if (this.Id != other.Id) {
+        if (this.id != other.id) {
             return false;
         }
         if (!Objects.equals(this.title, other.title)) {

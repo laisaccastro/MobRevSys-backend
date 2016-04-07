@@ -1,5 +1,7 @@
 package com.tcc.servidor_tcc.entidades;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.*;
@@ -22,6 +24,7 @@ public class Reviewer {
     private String country;
 
     @OneToMany(mappedBy = "owner")
+    @JsonIgnore
     private List<SystematicReview> reviews;
 
     public String getName() {

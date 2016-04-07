@@ -2,25 +2,23 @@ package com.tcc.servidor_tcc.entidades;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 @Entity
-class Study {    
+public class Study {
     
     @Id
     @GeneratedValue
-    private long Id;
+    private long id;
     private List<String> authors;
     private String title;
+    @Lob
     private String studyAbstract;
     @OneToMany(mappedBy = "study")
     private List<ReviewedStudy> reviewedStudies;
 
     public long getId() {
-        return Id;
+        return id;
     }
 
 
@@ -40,7 +38,7 @@ class Study {
     }
 
     public void setId(long Id) {
-        this.Id = Id;
+        this.id = Id;
     }
 
     public List<String> getAuthors() {
@@ -79,7 +77,7 @@ class Study {
             return false;
         }
         final Study other = (Study) obj;
-        if (this.Id != other.Id) {
+        if (this.id != other.id) {
             return false;
         }
         if (!Objects.equals(this.title, other.title)) {

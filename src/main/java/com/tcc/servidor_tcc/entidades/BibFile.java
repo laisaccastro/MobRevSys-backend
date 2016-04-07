@@ -1,32 +1,27 @@
 
 package com.tcc.servidor_tcc.entidades;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 @Entity
 public class BibFile {
     
     @Id
     @GeneratedValue
-    private long Id;
+    private long id;
     private String name;
-    private URL url;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<Study> studies;
 
     public long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(long Id) {
-        this.Id = Id;
+        this.id = Id;
     }
 
     public String getName() {
@@ -35,14 +30,6 @@ public class BibFile {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public URL getUrl() {
-        return url;
-    }
-
-    public void setUrl(URL url) {
-        this.url = url;
     }
 
     public List<Study> getStudies() {
@@ -66,13 +53,10 @@ public class BibFile {
             return false;
         }
         final BibFile other = (BibFile) obj;
-        if (this.Id != other.Id) {
+        if (this.id != other.id) {
             return false;
         }
         if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        if (!Objects.equals(this.url, other.url)) {
             return false;
         }
         if (!Objects.equals(this.studies, other.studies)) {

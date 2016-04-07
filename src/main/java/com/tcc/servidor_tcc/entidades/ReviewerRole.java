@@ -10,10 +10,10 @@ public class ReviewerRole {
     
     @Id
     @GeneratedValue
-    public long Id;
+    public long id;
 
     @ManyToOne
-    private SystematicReview systematicReview;
+    private SystematicReview sysReview;
 
     private Reviewer reviewer;
 
@@ -21,19 +21,19 @@ public class ReviewerRole {
     private List<RoleType> roles;
 
     public long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(long Id) {
-        this.Id = Id;
+        this.id = Id;
     }
 
-    public SystematicReview getSystematicReview() {
-        return systematicReview;
+    public SystematicReview getSysReview() {
+        return sysReview;
     }
 
-    public void setSystematicReview(SystematicReview systematicReview) {
-        this.systematicReview = systematicReview;
+    public void setSysReview(SystematicReview sysReview) {
+        this.sysReview = sysReview;
     }
 
     public Reviewer getReviewer() {
@@ -64,10 +64,10 @@ public class ReviewerRole {
             return false;
         }
         final ReviewerRole other = (ReviewerRole) obj;
-        if (this.Id != other.Id) {
+        if (this.id != other.id) {
             return false;
         }
-        if (!Objects.equals(this.systematicReview, other.systematicReview)) {
+        if (!Objects.equals(this.sysReview, other.sysReview)) {
             return false;
         }
         if (!Objects.equals(this.reviewer, other.reviewer)) {

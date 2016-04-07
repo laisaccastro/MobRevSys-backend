@@ -9,7 +9,7 @@ public class Criteria {
      
     @Id
     @GeneratedValue
-    private long Id;
+    private long id;
     private String description;
     @Enumerated(EnumType.STRING)
     private CriteriaType type;

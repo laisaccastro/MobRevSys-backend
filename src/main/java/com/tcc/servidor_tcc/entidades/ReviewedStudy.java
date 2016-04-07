@@ -9,7 +9,7 @@ public class ReviewedStudy {
     
     @Id
     @GeneratedValue
-    private long Id;
+    private long id;
     @ManyToOne
     private Study study;
 
@@ -21,11 +21,11 @@ public class ReviewedStudy {
     private List<ReviewedStudyCriteria> reviewedCriteria;
 
     public long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(long Id) {
-        this.Id = Id;
+        this.id = Id;
     }
 
     public Study getStudy() {
@@ -73,7 +73,7 @@ public class ReviewedStudy {
             return false;
         }
         final ReviewedStudy other = (ReviewedStudy) obj;
-        if (this.Id != other.Id) {
+        if (this.id != other.id) {
             return false;
         }
         if (this.included != other.included) {
