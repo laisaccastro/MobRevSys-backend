@@ -24,7 +24,7 @@ public class AppServer {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-        Server server = new Server(9080);
+        Server server = new Server(Integer.valueOf(System.getenv("PORT")));
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
         server.setHandler(context);
