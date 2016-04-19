@@ -15,7 +15,7 @@ public class ReviewerRole {
     @ManyToOne
     private SystematicReview sysReview;
 
-    @OneToOne(cascade = CascadeType.MERGE)
+    @OneToOne(cascade = CascadeType.ALL)
     private Reviewer reviewer;
 
     @Enumerated(EnumType.STRING)

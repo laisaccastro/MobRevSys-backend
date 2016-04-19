@@ -13,7 +13,7 @@ public class BibFile {
     private long id;
     private String name;
 
-    @OneToMany(cascade = CascadeType.MERGE)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Study> studies;
 
     public long getId() {

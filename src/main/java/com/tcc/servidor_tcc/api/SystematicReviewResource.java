@@ -55,9 +55,10 @@ public class SystematicReviewResource {
             }
             inviteReviewers(reviewerDAO, sr);
             SystematicReviewDAO srd = new SystematicReviewDAOjpa();
-            srd.save(sr);
+            srd.update(sr);
         }catch(Exception e){
             e.printStackTrace();
+            return Response.serverError().build();
         }
         return Response.ok().build();
     }
@@ -130,6 +131,7 @@ public class SystematicReviewResource {
             srDAO.update(sr);
         }catch(Exception e){
             e.printStackTrace();
+            return Response.serverError().build();
         }
         return Response.ok().build();
     }

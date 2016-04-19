@@ -18,7 +18,7 @@ public class Study {
     private IncludeType includedFinalReview = IncludeType.EXCLUDED;
     @Lob
     private String studyAbstract;
-    @OneToMany(mappedBy = "study", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "study", cascade = CascadeType.ALL)
     private List<ReviewedStudy> reviewedStudies;
 
     public long getId() {

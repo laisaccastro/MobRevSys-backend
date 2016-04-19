@@ -15,10 +15,10 @@ public class ReviewedStudy {
     @ManyToOne
     private Study study;
 
-    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @OneToOne(cascade = CascadeType.ALL)
     private Reviewer reviewer;
 
-    @OneToMany(cascade = CascadeType.MERGE)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ReviewedStudyCriteria> reviewedCriteria;
 
     private IncludeType includedInitialSelection;

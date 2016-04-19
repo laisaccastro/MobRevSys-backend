@@ -34,13 +34,13 @@ public class SystematicReview {
 
     private List<String> researchQuestions;
 
-    @OneToMany(cascade =CascadeType.MERGE)
+    @OneToMany(cascade =CascadeType.ALL)
     private List<Criteria> criteria;
 
-    @OneToMany(mappedBy="sysReview",cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy="sysReview",cascade = CascadeType.ALL)
     private List<ReviewerRole> participatingReviewers;
 
-    @OneToOne(cascade = CascadeType.MERGE)
+    @OneToOne(cascade = CascadeType.ALL)
     private BibFile bib;
 
     @Enumerated(EnumType.STRING)

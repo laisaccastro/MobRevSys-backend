@@ -8,7 +8,7 @@ public class ReviewedStudyCriteria {
     @Id
     @GeneratedValue
     private long id;
-    @OneToOne(cascade = CascadeType.MERGE)
+    @OneToOne(cascade = CascadeType.ALL)
     private Criteria criteria;
     private boolean satisfied;
 
