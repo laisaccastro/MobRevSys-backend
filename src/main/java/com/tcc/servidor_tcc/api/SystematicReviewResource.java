@@ -127,6 +127,11 @@ public class SystematicReviewResource {
         try {
             String email = Token.getClientEmail(jwt);
             SystematicReviewDAO srDAO = new SystematicReviewDAOjpa();
+            ReviewerDAO rDAO = new ReviewerDAOjpa();
+            Optional<Reviewer> r = rDAO.getOne(sr.getOwner().getEmail());
+            if(r.isPresent()){
+                sr.setOwner(r.get());
+            }
 //            SystematicReview existingSR = srDAO.get(sr.getId());
             srDAO.update(sr);
         }catch(Exception e){
