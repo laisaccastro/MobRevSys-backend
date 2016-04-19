@@ -1,5 +1,7 @@
 package com.tcc.servidor_tcc.entidades;
 
+import com.tcc.servidor_tcc.type.IncludeType;
+
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.*;
@@ -13,12 +15,15 @@ public class ReviewedStudy {
     @ManyToOne
     private Study study;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     private Reviewer reviewer;
-    private boolean included;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.MERGE)
     private List<ReviewedStudyCriteria> reviewedCriteria;
+
+    private IncludeType includedInitialSelection;
+
+    private IncludeType includedFinalSelection;
 
     public long getId() {
         return id;
@@ -44,14 +49,6 @@ public class ReviewedStudy {
         this.reviewer = reviewer;
     }
 
-    public boolean isIncluded() {
-        return included;
-    }
-
-    public void setIncluded(boolean included) {
-        this.included = included;
-    }
-
     public List<ReviewedStudyCriteria> getReviewedCriteria() {
         return reviewedCriteria;
     }
@@ -61,35 +58,19 @@ public class ReviewedStudy {
     }
 
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final ReviewedStudy other = (ReviewedStudy) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        if (this.included != other.included) {
-            return false;
-        }
-        if (!Objects.equals(this.study, other.study)) {
-            return false;
-        }
-        if (!Objects.equals(this.reviewer, other.reviewer)) {
-            return false;
-        }
-        if (!Objects.equals(this.reviewedCriteria, other.reviewedCriteria)) {
-            return false;
-        }
-        return true;
+    public IncludeType getIncludedInitialSelection() {
+        return includedInitialSelection;
     }
-    
-    
+
+    public void setIncludedInitialSelection(IncludeType includedInitialSelection) {
+        this.includedInitialSelection = includedInitialSelection;
+    }
+
+    public IncludeType getIncludedFinalSelection() {
+        return includedFinalSelection;
+    }
+
+    public void setIncludedFinalSelection(IncludeType includedFinalSelection) {
+        this.includedFinalSelection = includedFinalSelection;
+    }
 }

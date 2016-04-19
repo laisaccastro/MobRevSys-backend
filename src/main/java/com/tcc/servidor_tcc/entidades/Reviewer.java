@@ -23,10 +23,6 @@ public class Reviewer {
     private String affiliatedUniversity;
     private String country;
 
-    @OneToMany(mappedBy = "owner")
-    @JsonIgnore
-    private List<SystematicReview> reviews;
-
     public String getName() {
         return name;
     }
@@ -67,14 +63,6 @@ public class Reviewer {
         this.country = country;
     }
 
-    public List<SystematicReview> getReviews() {
-        return reviews;
-    }
-
-    public void setReviews(List<SystematicReview> reviews) {
-        this.reviews = reviews;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -97,9 +85,6 @@ public class Reviewer {
             return false;
         }
         if (!Objects.equals(this.country, other.country)) {
-            return false;
-        }
-        if (!Objects.equals(this.reviews, other.reviews)) {
             return false;
         }
         return true;

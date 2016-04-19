@@ -12,6 +12,7 @@ public class SystematicReviewDAOjpa extends DaoJpa implements SystematicReviewDA
 
     public SystematicReviewDAOjpa(){
         em = getEntityManager();
+
     }
 
     @Override
@@ -22,8 +23,8 @@ public class SystematicReviewDAOjpa extends DaoJpa implements SystematicReviewDA
     }
 
     @Override
-    public SystematicReview get() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public SystematicReview get(long id) {
+        return em.find(SystematicReview.class,id);
     }
 
     @Override
@@ -33,6 +34,11 @@ public class SystematicReviewDAOjpa extends DaoJpa implements SystematicReviewDA
         List<SystematicReview> sr = q.getResultList();
         return sr;
     }
-    
-    
+
+    @Override
+    public void update(SystematicReview sr) {
+        em.getTransaction().begin();
+        em.merge(sr);
+        em.getTransaction().commit();
+    }
 }

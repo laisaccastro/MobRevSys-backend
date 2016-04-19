@@ -45,7 +45,9 @@ public class BibResource {
                 }
                 Value author = entry.getField(BibTeXEntry.KEY_AUTHOR);
                 if(author==null){
-                    continue;
+                    List<String> authors = new ArrayList<>();
+                    authors.add("Unknown");
+                    study.setAuthors(authors);
                 }else {
                     List<String> authors = Arrays.asList(author.toUserString().split(","));
                     study.setAuthors(authors);

@@ -1,6 +1,7 @@
 package com.tcc.servidor_tcc.entidades;
 
 import com.tcc.servidor_tcc.type.PaperDivisionType;
+import com.tcc.servidor_tcc.type.StageType;
 
 import javax.persistence.*;
 import java.util.List;
@@ -29,20 +30,24 @@ public class SystematicReview {
 
     private String title;
 
-    private String objective;
+    private List<String> objectives;
 
     private List<String> researchQuestions;
 
+    @OneToMany(cascade =CascadeType.MERGE)
     private List<Criteria> criteria;
 
-    @OneToMany(mappedBy="sysReview")
+    @OneToMany(mappedBy="sysReview",cascade = CascadeType.MERGE)
     private List<ReviewerRole> participatingReviewers;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade = CascadeType.MERGE)
     private BibFile bib;
 
     @Enumerated(EnumType.STRING)
     private PaperDivisionType divisionType;
+
+    @Enumerated(EnumType.STRING)
+    private StageType stage;
 
 
     public long getId() {
@@ -69,12 +74,12 @@ public class SystematicReview {
         this.title = title;
     }
 
-    public String getObjective() {
-        return objective;
+    public List<String> getObjectives() {
+        return objectives;
     }
 
-    public void setObjective(String objective) {
-        this.objective = objective;
+    public void setObjectives(List<String> objectives) {
+        this.objectives = objectives;
     }
 
     public List<String> getResearchQuestions() {
@@ -117,6 +122,14 @@ public class SystematicReview {
         this.divisionType = divisionType;
     }
 
+    public StageType getStage() {
+        return stage;
+    }
+
+    public void setStage(StageType stage) {
+        this.stage = stage;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -133,9 +146,6 @@ public class SystematicReview {
             return false;
         }
         if (!Objects.equals(this.title, other.title)) {
-            return false;
-        }
-        if (!Objects.equals(this.objective, other.objective)) {
             return false;
         }
         if (!Objects.equals(this.owner, other.owner)) {

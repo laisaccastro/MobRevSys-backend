@@ -1,4 +1,6 @@
 package com.tcc.servidor_tcc.entidades;
+import com.tcc.servidor_tcc.type.IncludeType;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -12,9 +14,11 @@ public class Study {
     private long id;
     private List<String> authors;
     private String title;
+    private IncludeType includedInitialReview = IncludeType.EXCLUDED;
+    private IncludeType includedFinalReview = IncludeType.EXCLUDED;
     @Lob
     private String studyAbstract;
-    @OneToMany(mappedBy = "study")
+    @OneToMany(mappedBy = "study", cascade = CascadeType.MERGE)
     private List<ReviewedStudy> reviewedStudies;
 
     public long getId() {
@@ -65,7 +69,28 @@ public class Study {
         this.studyAbstract = studyAbstract;
     }
 
-@Override
+
+    public IncludeType getIncludedInitialReview() {
+        return includedInitialReview;
+    }
+
+    public void setIncludedInitialReview(IncludeType includedInitialReview) {
+        this.includedInitialReview = includedInitialReview;
+    }
+
+    public IncludeType getIncludedFinalReview() {
+        return includedFinalReview;
+    }
+
+    public void setIncludedFinalReview(IncludeType includedFinalReview) {
+        this.includedFinalReview = includedFinalReview;
+    }
+
+    public void setReviewedStudies(List<ReviewedStudy> reviewedStudies) {
+        this.reviewedStudies = reviewedStudies;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;

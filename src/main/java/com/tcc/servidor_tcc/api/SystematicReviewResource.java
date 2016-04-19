@@ -99,7 +99,7 @@ public class SystematicReviewResource {
             email.setSubject("MobRevSys - Invited to participate in a Systematic Review");
             if(registered){
                 email.setMsg("Hello "+ reviewer.getName()+",\n"
-                        + sr.getOwner().getName()+ "has invited you to participate in a "
+                        + sr.getOwner().getName()+ " has invited you to participate in a "
                         + "Systematic Review with the title of \""+sr.getTitle()+"\".\n"
                 + "Best Regards,\n MobRevSys");
             }else{
@@ -117,4 +117,21 @@ public class SystematicReviewResource {
             e.printStackTrace();
         }
     }
+
+    @Path("/update")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateSR(SystematicReview sr, @HeaderParam("Authorization") String jwt) {
+        try {
+            String email = Token.getClientEmail(jwt);
+            SystematicReviewDAO srDAO = new SystematicReviewDAOjpa();
+//            SystematicReview existingSR = srDAO.get(sr.getId());
+            srDAO.update(sr);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return Response.ok().build();
+    }
+
 }

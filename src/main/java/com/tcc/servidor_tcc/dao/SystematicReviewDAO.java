@@ -7,8 +7,10 @@ public interface SystematicReviewDAO {
     
     public void save(SystematicReview sr);
     
-    public SystematicReview get();
+    public SystematicReview get(long id);
     
     public List<SystematicReview> getAll(String email);
+
+    public void update(SystematicReview sr);
     
 }

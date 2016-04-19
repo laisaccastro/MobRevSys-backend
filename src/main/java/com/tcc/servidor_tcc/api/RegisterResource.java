@@ -34,6 +34,15 @@ public class RegisterResource {
             return Response.ok().entity(result).build();
 
         }else{
+            Reviewer r = rev.get();
+            if(r.getPassword()==null){
+                r.setPassword(reviewer.getPassword());
+                r.setAffiliatedUniversity(reviewer.getAffiliatedUniversity());
+                r.setCountry(reviewer.getCountry());
+                r.setName(reviewer.getName());
+                String result = Token.createClientToken(reviewer.getEmail());
+                return Response.ok().entity(result).build();
+            }
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
     }
