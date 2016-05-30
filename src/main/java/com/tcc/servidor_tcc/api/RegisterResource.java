@@ -40,6 +40,7 @@ public class RegisterResource {
                 r.setAffiliatedUniversity(reviewer.getAffiliatedUniversity());
                 r.setCountry(reviewer.getCountry());
                 r.setName(reviewer.getName());
+                dao.persist(r);
                 String result = Token.createClientToken(reviewer.getEmail());
                 return Response.ok().entity(result).build();
             }

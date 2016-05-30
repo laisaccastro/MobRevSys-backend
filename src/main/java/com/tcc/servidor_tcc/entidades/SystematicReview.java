@@ -10,17 +10,13 @@ import java.util.Objects;
 @NamedQueries({
         @NamedQuery(name="SystematicReview.getAll",
                 query="SELECT SR FROM SystematicReview SR WHERE SR.owner.email = :email")
-//        @NamedQuery(name="SystematicReview.getAll",
-//                    query="SELECT SR FROM SystematicReview SR " +
-//                            "where SR.owner.email = :email " +
-//                            "OR (SELECT COUNT(RR) FROM ReviewerRole RR" +
-//                                "where RR.reviewer.email = :email " +
-//                                "AND RR.systematicReview.id = SR.id ) > 0")
+//        @NamedQuery(name = "SystematicReview.getAll",
+//                query = "SELECT SR FROM SystematicReview SR join SR.participatingReviewers PR where SR.owner.email = :email OR RR.reviewer.email = :email")
 })
 
 @Entity
 public class SystematicReview {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -34,10 +30,10 @@ public class SystematicReview {
 
     private List<String> researchQuestions;
 
-    @OneToMany(cascade =CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Criteria> criteria;
 
-    @OneToMany(mappedBy="sysReview",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "sysReview", cascade = CascadeType.ALL)
     private List<ReviewerRole> participatingReviewers;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -163,7 +159,7 @@ public class SystematicReview {
         if (!Objects.equals(this.bib, other.bib)) {
             return false;
         }
-        if (!Objects.equals(this.divisionType, other.divisionType)){
+        if (!Objects.equals(this.divisionType, other.divisionType)) {
             return false;
         }
         return true;
