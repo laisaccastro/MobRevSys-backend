@@ -2,6 +2,7 @@ package com.tcc.servidor_tcc.dao;
 
 import com.tcc.servidor_tcc.entidades.SystematicReview;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -30,9 +31,13 @@ public class SystematicReviewDAOjpa extends DaoJpa implements SystematicReviewDA
     @Override
     public List<SystematicReview> getAll(String email) {
         Query q = em.createNamedQuery("SystematicReview.getAll");
-        q.setParameter("email", email);
         List<SystematicReview> sr = q.getResultList();
-        return sr;
+        return sr.parallelStream()
+                .filter(
+                        sysrev -> sysrev.getOwner().getEmail().equals(email) ||
+                sysrev.getParticipatingReviewers().stream().anyMatch(
+                        rev -> rev.getReviewer().getEmail().equals(email)
+                )).collect(Collectors.toList());
     }
 
     @Override

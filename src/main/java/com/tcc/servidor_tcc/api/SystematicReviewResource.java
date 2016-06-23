@@ -5,23 +5,17 @@
  */
 package com.tcc.servidor_tcc.api;
 
+import com.google.api.client.util.Lists;
 import com.tcc.servidor_tcc.api.filter.Authenticate;
-import com.tcc.servidor_tcc.dao.ReviewerDAO;
-import com.tcc.servidor_tcc.dao.ReviewerDAOjpa;
-import com.tcc.servidor_tcc.dao.SystematicReviewDAO;
-import com.tcc.servidor_tcc.dao.SystematicReviewDAOjpa;
-import com.tcc.servidor_tcc.entidades.Reviewer;
-import com.tcc.servidor_tcc.entidades.ReviewerRole;
-import com.tcc.servidor_tcc.entidades.SystematicReview;
+import com.tcc.servidor_tcc.dao.*;
+import com.tcc.servidor_tcc.entidades.*;
 import com.tcc.servidor_tcc.tokenUtil.Token;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HeaderParam;
@@ -31,10 +25,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import com.tcc.servidor_tcc.type.PaperDivisionType;
+import com.tcc.servidor_tcc.type.RoleType;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
-import org.jbibtex.*;
+
 
 @Path("/systematicreview")
 @Authenticate
@@ -54,6 +51,60 @@ public class SystematicReviewResource {
                 throw new RuntimeException("Trying to set as owner a reviewer that does not exist");
             }
             inviteReviewers(reviewerDAO, sr);
+            for(ReviewerRole rr: sr.getParticipatingReviewers()) {
+                Optional<Reviewer> participatingReviewer = reviewerDAO.getOne(rr.getReviewer().getEmail());
+                if(participatingReviewer.isPresent()) {
+                    rr.setReviewer(participatingReviewer.get());
+                }
+            }
+            PaperDivisionType divisionType = sr.getDivisionType();
+            if(divisionType.equals(PaperDivisionType.SPLIT)) {
+                List<ReviewerRole> selectionParticipants = sr.getParticipatingReviewers()
+                        .stream()
+                        .filter(rr -> rr.getRoles().contains(RoleType.SELECTION))
+                        .collect(Collectors.toList());
+                int participantsCount = selectionParticipants.size() + 1;
+                List<List<Study>> studies = com.google.common.collect.Lists
+                        .partition(sr.getBib().getStudies(), (int) Math.ceil((double) sr.getBib().getStudies().size()/participantsCount));
+                for (int x = 0; x < studies.size(); x++) {
+                    if (x == 0) {
+                        studies.get(0).stream().forEach(study -> {
+                            ReviewedStudy rs = new ReviewedStudy();
+                            rs.setStudy(study);
+                            rs.setReviewer(sr.getOwner());
+                            study.addReviewedStudy(rs);
+                        });
+                    } else {
+                        final int pos = x - 1;
+                        studies.get(x).stream().forEach(study -> {
+                            ReviewedStudy rs = new ReviewedStudy();
+                            rs.setStudy(study);
+                            rs.setReviewer(selectionParticipants.get(pos).getReviewer());
+                            study.addReviewedStudy(rs);
+                        });
+                    }
+                }
+            }else{
+                List<Study> studies = sr.getBib().getStudies();
+                for (int x = 0; x < sr.getParticipatingReviewers().size(); x++) {
+                    if (x == 0) {
+                        studies.stream().forEach(study -> {
+                            ReviewedStudy rs = new ReviewedStudy();
+                            rs.setStudy(study);
+                            rs.setReviewer(sr.getOwner());
+                            study.addReviewedStudy(rs);
+                        });
+                    } else {
+                        final int pos = x;
+                        studies.stream().forEach(study -> {
+                            ReviewedStudy rs = new ReviewedStudy();
+                            rs.setStudy(study);
+                            rs.setReviewer(sr.getParticipatingReviewers().get(pos - 1).getReviewer());
+                            study.addReviewedStudy(rs);
+                        });
+                    }
+                }
+            }
             SystematicReviewDAO srd = new SystematicReviewDAOjpa();
             srd.update(sr);
         }catch(Exception e){
@@ -68,8 +119,11 @@ public class SystematicReviewResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllSR(@HeaderParam("Authorization") String jwt){
         String email = Token.getClientEmail(jwt);
-        SystematicReviewDAO srd = new SystematicReviewDAOjpa();
-        List<SystematicReview> sr = srd.getAll(email);
+        System.out.println(email);
+        SystematicReviewDAO srDao = new SystematicReviewDAOjpa();
+        List<SystematicReview> sr = srDao.getAll(email);
+        System.out.println(sr);
+//        List<SystematicReview> sr =  rr.parallelStream().map(reviewerRole -> reviewerRole.getSysReview()).distinct().collect(Collectors.toList());
         return Response.ok().entity(sr).build();
 
     }

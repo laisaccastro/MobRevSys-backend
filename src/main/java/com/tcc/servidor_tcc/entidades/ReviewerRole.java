@@ -5,6 +5,11 @@ import java.util.List;
 import java.util.Objects;
 import javax.persistence.*;
 
+@NamedQueries({
+        @NamedQuery(name = "ReviewerRole.getAllByEmail",
+                query ="SELECT RR FROM ReviewerRole RR where RR.reviewer.email = :email")
+}
+)
 @Entity
 public class ReviewerRole {
     
@@ -15,7 +20,7 @@ public class ReviewerRole {
     @ManyToOne
     private SystematicReview sysReview;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.PERSIST)
     private Reviewer reviewer;
 
     @Enumerated(EnumType.STRING)

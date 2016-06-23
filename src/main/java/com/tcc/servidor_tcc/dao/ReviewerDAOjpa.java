@@ -42,4 +42,11 @@ public class ReviewerDAOjpa extends DaoJpa implements ReviewerDAO {
         em.persist(reviewer);
         em.getTransaction().commit();
     }
+
+    @Override
+    public void update(Reviewer reviewer) {
+        em.getTransaction().begin();
+        em.merge(reviewer);
+        em.getTransaction().commit();
+    }
 }

@@ -22,6 +22,9 @@ public class Reviewer {
     private String password;
     private String affiliatedUniversity;
     private String country;
+//
+//    @OneToMany(mappedBy = "reviewer")
+//    private List<ReviewerRole> reviewerRoles;
 
     public String getName() {
         return name;

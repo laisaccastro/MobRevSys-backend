@@ -1,5 +1,6 @@
 package com.tcc.servidor_tcc.entidades;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcc.servidor_tcc.type.IncludeType;
 
 import java.util.List;
@@ -13,6 +14,7 @@ public class ReviewedStudy {
     @GeneratedValue
     private long id;
     @ManyToOne
+    @JsonIgnore
     private Study study;
 
     @OneToOne(cascade = CascadeType.ALL)

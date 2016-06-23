@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @NamedQueries({
         @NamedQuery(name="SystematicReview.getAll",
-                query="SELECT SR FROM SystematicReview SR WHERE SR.owner.email = :email")
+                query="SELECT SR FROM SystematicReview SR")
 //        @NamedQuery(name = "SystematicReview.getAll",
 //                query = "SELECT SR FROM SystematicReview SR join SR.participatingReviewers PR where SR.owner.email = :email OR RR.reviewer.email = :email")
 })
@@ -33,7 +33,7 @@ public class SystematicReview {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Criteria> criteria;
 
-    @OneToMany(mappedBy = "sysReview", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "sysReview", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ReviewerRole> participatingReviewers;
 
     @OneToOne(cascade = CascadeType.ALL)

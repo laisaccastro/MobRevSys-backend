@@ -11,4 +11,6 @@ public interface ReviewerDAO {
     public void persist(Reviewer reviewer);
     
     public List<Reviewer> getAll();
+
+    public void update(Reviewer reviewer);
 }
