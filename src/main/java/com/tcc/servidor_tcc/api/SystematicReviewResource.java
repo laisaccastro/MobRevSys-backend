@@ -26,8 +26,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.tcc.servidor_tcc.type.IncludeType;
 import com.tcc.servidor_tcc.type.PaperDivisionType;
 import com.tcc.servidor_tcc.type.RoleType;
+import com.tcc.servidor_tcc.type.StageType;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
@@ -123,7 +125,6 @@ public class SystematicReviewResource {
         SystematicReviewDAO srDao = new SystematicReviewDAOjpa();
         List<SystematicReview> sr = srDao.getAll(email);
         System.out.println(sr);
-//        List<SystematicReview> sr =  rr.parallelStream().map(reviewerRole -> reviewerRole.getSysReview()).distinct().collect(Collectors.toList());
         return Response.ok().entity(sr).build();
 
     }
@@ -179,12 +180,29 @@ public class SystematicReviewResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateSR(SystematicReview sr, @HeaderParam("Authorization") String jwt) {
         try {
-            String email = Token.getClientEmail(jwt);
             SystematicReviewDAO srDAO = new SystematicReviewDAOjpa();
-            ReviewerDAO rDAO = new ReviewerDAOjpa();
-            Optional<Reviewer> r = rDAO.getOne(sr.getOwner().getEmail());
-            if(r.isPresent()){
-                sr.setOwner(r.get());
+            sr.getParticipatingReviewers().stream().map(pr -> pr.getReviewer().getEmail()).forEach(System.out::println);
+            boolean isInitialSelectionFinished = sr.getBib()
+                    .getStudies()
+                    .parallelStream()
+                    .allMatch((s) -> s.getReviewedStudies()
+                            .stream()
+                            .allMatch(rs -> rs.getIncludedInitialSelection() != null));
+            boolean isFinalSelectionFinished = false;
+            if(isInitialSelectionFinished) {
+                isFinalSelectionFinished = sr.getBib()
+                        .getStudies()
+                        .parallelStream()
+                        .allMatch((s) -> s.getReviewedStudies()
+                                .stream()
+                                .filter(rs -> rs.getIncludedInitialSelection() == IncludeType.INCLUDED)
+                                .allMatch(rs -> rs.getIncludedFinalSelection() != null));
+            }
+            System.out.println("Final Selection: " + isFinalSelectionFinished);
+            if(isFinalSelectionFinished) {
+                sr.setStage(StageType.FINAL_REVIEW);
+            } else if (isInitialSelectionFinished){
+                sr.setStage(StageType.FINAL_SELECTION);
             }
 //            SystematicReview existingSR = srDAO.get(sr.getId());
             srDAO.update(sr);
