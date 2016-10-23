@@ -24,16 +24,16 @@ public class AppServer {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-        Server server = new Server(Integer.valueOf(System.getenv("PORT")));
+        Server server = new Server(Integer.valueOf("5000"));
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
         server.setHandler(context);
 //        context.setResourceBase("src/main/webapp/angularjs/dist");
-        context.addServlet(DefaultServlet.class,"/");  
+        context.addServlet(DefaultServlet.class,"/");
         ServletHolder servlet  = context.addServlet(org.glassfish.jersey.servlet.ServletContainer.class,"/api/*");
         servlet.setInitOrder(0);
         servlet.setInitParameter("jersey.config.server.provider.packages","com.tcc.servidor_tcc.api");
-        
+
 
         try{
             server.start();

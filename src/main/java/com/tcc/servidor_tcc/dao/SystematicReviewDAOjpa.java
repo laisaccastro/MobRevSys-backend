@@ -46,4 +46,12 @@ public class SystematicReviewDAOjpa extends DaoJpa implements SystematicReviewDA
         em.merge(sr);
         em.getTransaction().commit();
     }
+
+    @Override
+    public void delete(SystematicReview sr) {
+        em.getTransaction().begin();
+        em.remove(sr);
+        em.getTransaction().commit();
+    }
+
 }

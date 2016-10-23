@@ -12,5 +12,7 @@ public interface SystematicReviewDAO {
     public List<SystematicReview> getAll(String email);
 
     public void update(SystematicReview sr);
+
+    public void delete(SystematicReview sr);
     
 }

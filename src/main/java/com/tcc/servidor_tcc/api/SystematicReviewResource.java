@@ -17,12 +17,7 @@ import java.io.Reader;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -70,7 +65,7 @@ public class SystematicReviewResource {
                         .partition(sr.getBib().getStudies(), (int) Math.ceil((double) sr.getBib().getStudies().size()/participantsCount));
                 for (int x = 0; x < studies.size(); x++) {
                     if (x == 0) {
-                        studies.get(0).stream().forEach(study -> {
+                        studies.get(0).forEach(study -> {
                             ReviewedStudy rs = new ReviewedStudy();
                             rs.setStudy(study);
                             rs.setReviewer(sr.getOwner());
@@ -78,7 +73,7 @@ public class SystematicReviewResource {
                         });
                     } else {
                         final int pos = x - 1;
-                        studies.get(x).stream().forEach(study -> {
+                        studies.get(x).forEach(study -> {
                             ReviewedStudy rs = new ReviewedStudy();
                             rs.setStudy(study);
                             rs.setReviewer(selectionParticipants.get(pos).getReviewer());
@@ -88,9 +83,9 @@ public class SystematicReviewResource {
                 }
             }else{
                 List<Study> studies = sr.getBib().getStudies();
-                for (int x = 0; x < sr.getParticipatingReviewers().size(); x++) {
-                    if (x == 0) {
-                        studies.stream().forEach(study -> {
+                for (int x = -1; x < sr.getParticipatingReviewers().size(); x++) {
+                    if (x == -1) {
+                        studies.forEach(study -> {
                             ReviewedStudy rs = new ReviewedStudy();
                             rs.setStudy(study);
                             rs.setReviewer(sr.getOwner());
@@ -98,10 +93,10 @@ public class SystematicReviewResource {
                         });
                     } else {
                         final int pos = x;
-                        studies.stream().forEach(study -> {
+                        studies.forEach(study -> {
                             ReviewedStudy rs = new ReviewedStudy();
                             rs.setStudy(study);
-                            rs.setReviewer(sr.getParticipatingReviewers().get(pos - 1).getReviewer());
+                            rs.setReviewer(sr.getParticipatingReviewers().get(pos).getReviewer());
                             study.addReviewedStudy(rs);
                         });
                     }
@@ -121,10 +116,8 @@ public class SystematicReviewResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllSR(@HeaderParam("Authorization") String jwt){
         String email = Token.getClientEmail(jwt);
-        System.out.println(email);
         SystematicReviewDAO srDao = new SystematicReviewDAOjpa();
         List<SystematicReview> sr = srDao.getAll(email);
-        System.out.println(sr);
         return Response.ok().entity(sr).build();
 
     }
@@ -174,6 +167,19 @@ public class SystematicReviewResource {
         }
     }
 
+    @Path("/{id}")
+    @DELETE
+    public Response deleteSR(@PathParam("id") long id){
+        SystematicReviewDAO srDAO = new SystematicReviewDAOjpa();
+        SystematicReview sr = srDAO.get(id);
+        if(sr == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } else {
+            srDAO.delete(sr);
+            return Response.ok().build();
+        }
+    }
+
     @Path("/update")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -198,7 +204,6 @@ public class SystematicReviewResource {
                                 .filter(rs -> rs.getIncludedInitialSelection() == IncludeType.INCLUDED)
                                 .allMatch(rs -> rs.getIncludedFinalSelection() != null));
             }
-            System.out.println("Final Selection: " + isFinalSelectionFinished);
             if(isFinalSelectionFinished) {
                 sr.setStage(StageType.FINAL_REVIEW);
             } else if (isInitialSelectionFinished){

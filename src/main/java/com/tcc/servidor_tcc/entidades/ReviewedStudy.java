@@ -17,7 +17,7 @@ public class ReviewedStudy {
     @JsonIgnore
     private Study study;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Reviewer reviewer;
 
     @OneToMany(cascade = CascadeType.ALL)

@@ -12,9 +12,7 @@
     <class>com.tcc.servidor_tcc.entidades.Study</class>
     <properties>
       <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
-      <property name="javax.persistence.jdbc.url" value="jdbc:derby:database;create=true" />
-      <property name="javax.persistence.jdbc.user" value="test" />
-      <property name="javax.persistence.jdbc.password" value="test" />
+      <property name="javax.persistence.jdbc.url" value="jdbc:derby:database;user=test;password=test;create=true" />
 
   <!-- EclipseLink should create the database schema automatically -->
       <property name="eclipselink.ddl-generation" value="create-tables" />
