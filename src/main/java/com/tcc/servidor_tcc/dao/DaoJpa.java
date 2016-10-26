@@ -12,14 +12,15 @@ import java.util.Map;
 public abstract class DaoJpa {
 
     protected static EntityManagerFactory emf=null;
-    private final String DATABASE_URL = "DATABASE_URL";
+    private final String JDBC_DATABASE_URL = "JDBC_DATABASE_URL";
 
     protected synchronized EntityManager getEntityManager(){
         if(emf == null){
             Map<String, String> env = System.getenv();
             Map<String, String> configOverrides = new HashMap<>();
-            if(env.containsKey(DATABASE_URL)){
-                configOverrides.put("javax.persistence.jdbc.url", env.get(DATABASE_URL) + ";create=true");
+            if(env.containsKey(JDBC_DATABASE_URL)){
+                configOverrides.put("javax.persistence.jdbc.url", env.get(JDBC_DATABASE_URL) + ";create=true");
+                configOverrides.put("javax.persistence.jdbc.driver", "org.postgresql.Driver");
             }
             emf = Persistence.createEntityManagerFactory("tcc_unit", configOverrides);
         }
