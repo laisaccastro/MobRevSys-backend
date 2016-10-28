@@ -2,3 +2,5 @@ target/
 nbactions.xml
 *.iml
 .idea/
+database/
+derby.log
