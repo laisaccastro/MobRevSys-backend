@@ -19,7 +19,7 @@ public abstract class DaoJpa {
             Map<String, String> env = System.getenv();
             Map<String, String> configOverrides = new HashMap<>();
             if(env.containsKey(JDBC_DATABASE_URL)){
-                configOverrides.put("javax.persistence.jdbc.url", env.get(JDBC_DATABASE_URL) + ";create=true");
+                configOverrides.put("javax.persistence.jdbc.url", env.get(JDBC_DATABASE_URL));
                 configOverrides.put("javax.persistence.jdbc.driver", "org.postgresql.Driver");
             }
             emf = Persistence.createEntityManagerFactory("tcc_unit", configOverrides);
